@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kata Kerja – แบบฝึกภาษามลายู ป.4</title>
+<style>
+:root{--bg:#fff7e6;--card:#fff;--ink:#2b2350;--mut:#6b6490;--p:#7c4dff;--ok:#22c55e;--no:#ef4444;--y:#ffc233;--pk:#ff5fa2;--bl:#38bdf8;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1736;--card:#2a2552;--ink:#fff;--mut:#b9b3e0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1736;--card:#2a2552;--ink:#fff;--mut:#b9b3e0;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai","Prompt",system-ui,sans-serif;padding:16px;max-width:640px;margin-inline:auto}
+h1{margin:4px 0;font-size:26px;text-align:center;background:linear-gradient(90deg,var(--p),var(--pk),var(--y));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{text-align:center;color:var(--mut);margin:0 0 14px}
+h2{font-size:18px;margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fc{aspect-ratio:1;border:0;border-radius:16px;color:#fff;font:inherit;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .2s;font-size:13px}
+.fc:active{transform:scale(.92)}.fc b{font-size:26px}
+.q{background:var(--card);border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 4px 0 rgba(124,77,255,.25)}
+.q p{margin:0 0 12px;font-size:18px;font-weight:600}
+.blank{display:inline-block;min-width:90px;border-bottom:3px dashed var(--p);text-align:center;color:var(--p)}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.o{flex:1;min-width:90px;border:0;border-radius:14px;padding:12px 8px;font:inherit;font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:transform .15s}
+.o:active{transform:scale(.94)}
+.o:nth-child(1){background:var(--p)}.o:nth-child(2){background:var(--pk)}.o:nth-child(3){background:var(--bl)}
+.o.right{background:var(--ok)!important}.o.wrong{background:var(--no)!important;animation:sh .3s}.o:disabled{cursor:default}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.5)}100%{transform:scale(1)}}
+.fb{min-height:22px;margin-top:8px;font-weight:700}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-radius:16px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.prog{height:10px;background:rgba(124,77,255,.2);border-radius:9px;flex:1;margin:0 12px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--y),var(--pk));transition:width .4s}
+.end{display:none;text-align:center;background:var(--card);border-radius:20px;padding:20px;animation:pop .4s}
+.end .big{font-size:56px}.end button{margin-top:10px;border:0;border-radius:14px;padding:12px 24px;font:inherit;font-weight:700;font-size:16px;color:#fff;background:var(--p);cursor:pointer}
+</style>
+</head>
+<body>
+<h1>🌈 Kata Kerja</h1>
+<p class="sub">แบบฝึกคำกริยาภาษามลายู ชั้น ป.4</p>
+
+<div class="bar"><span>⭐ <b id="sc">0</b>/6</span><div class="prog"><i id="pg"></i></div><span id="st"></span></div>
+
+<h2>📚 คำกริยาที่ควรรู้ (แตะการ์ดเพื่อดูความหมาย)</h2>
+<div class="grid" id="cards"></div>
+
+<h2>✏️ แบบฝึกที่ 1 : Jom Pilih! เลือกคำกริยาให้ถูกต้อง</h2>
+<div id="qs"></div>
+
+<div class="end" id="end"><div class="big" id="em"></div><h2 id="msg"></h2><p id="sum"></p><button onclick="reset()">🔄 เล่นอีกครั้ง</button></div>
+
+<script>
+const V=[["makan","กิน","🍚","#ff7a45"],["minum","ดื่ม","🥤","#38bdf8"],["tidur","นอน","😴","#7c4dff"],["membaca","อ่าน","📖","#22c55e"],["menulis","เขียน","✍️","#ff5fa2"],["bermain","เล่น","🎮","#f59e0b"],["mandi","อาบน้ำ","🛁","#06b6d4"],["berlari","วิ่ง","🏃","#ef4444"]];
+const Q=[["Ali","nasi","makan",["makan","tidur","mandi"]],["Siti","air","minum",["minum","membaca","berlari"]],["Ahmad","buku","membaca",["membaca","makan","tidur"]],["Fatimah","","berlari",["berlari","minum","menulis"]],["Abu","surat","menulis",["menulis","mandi","bermain"]],["Adik","","tidur",["tidur","makan","membaca"]]];
+const $=id=>document.getElementById(id);
+let score,done;
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang="ms-MY";speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+$("cards").innerHTML=V.map((v,i)=>`<button class="fc" style="background:${v[3]}" data-i="${i}" data-f="0"><b>${v[2]}</b><span>${v[0]}</span></button>`).join("");
+$("cards").onclick=e=>{const b=e.target.closest(".fc");if(!b)return;const v=V[b.dataset.i],f=b.dataset.f==="0";b.dataset.f=f?1:0;b.innerHTML=f?`<b>${v[2]}</b><span>${v[1]}</span>`:`<b>${v[2]}</b><span>${v[0]}</span>`;say(v[0])};
+function shuffle(a){return a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1])}
+function reset(){score=0;done=0;$("end").style.display="none";$("sc").textContent=0;$("pg").style.width=0;$("st").textContent="";
+$("qs").innerHTML=Q.map((q,i)=>`<div class="q" id="q${i}"><p>${i+1}. ${q[0]} sedang <span class="blank" id="b${i}">&nbsp;</span> ${q[1]}.</p><div class="opts">${shuffle(q[3]).map(o=>`<button class="o" data-q="${i}" data-o="${o}">${o}</button>`).join("")}</div><div class="fb" id="f${i}"></div></div>`).join("");
+window.scrollTo({top:0,behavior:"smooth"})}
+$("qs").onclick=e=>{const b=e.target.closest(".o");if(!b||b.disabled)return;const i=+b.dataset.q,ans=Q[i][2],ok=b.dataset.o===ans;
+if(ok){document.querySelectorAll(`#q${i} .o`).forEach(x=>{x.disabled=true;if(x.dataset.o===ans)x.classList.add("right")});
+$("b"+i).textContent=ans;$("f"+i).innerHTML="🎉 เก่งมาก! ถูกต้อง";$("f"+i).style.color="var(--ok)";say(ans);
+if(!Q[i].w)score++;done++;$("sc").textContent=score;$("pg").style.width=done/6*100+"%";
+if(done===6)finish()}
+else{b.classList.add("wrong");b.disabled=true;Q[i].w=1;$("f"+i).innerHTML="🤔 ลองใหม่อีกครั้งนะ";$("f"+i).style.color="var(--no)"}};
+function finish(){Q.forEach(q=>delete q.w);const s=score;$("em").textContent=s===6?"🏆":s>=4?"🌟":"💪";$("msg").textContent=s===6?"สุดยอด! ตอบถูกทุกข้อ":"ทำได้ดีมาก! ลองอีกครั้งเพื่อเก็บให้ครบ";$("sum").textContent="คะแนนตอบถูกในครั้งแรก "+s+" / 6";$("end").style.display="block";$("end").scrollIntoView({behavior:"smooth"})}
+reset();
+</script>
+</body>
+</html>
